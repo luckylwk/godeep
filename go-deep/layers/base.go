@@ -3,7 +3,7 @@ package layers
 //
 
 import (
-	// "math/rand"
+	"fmt"
 	"math"
 	"github.com/luckylwk/godeep/go-deep/utils"
 )
@@ -11,9 +11,10 @@ import (
 //
 
 type BaseLayer struct {
-	// Size.
+	// Base information for a base layer.
 	InputDim int
 	OutputDim int
+	Activation utils.ActivationFunction
 	//
 	Weights [][]float64
 	Biases []float64
@@ -27,11 +28,12 @@ type BaseLayer struct {
 	GradientsBiases []float64
 }
 
-func (self *BaseLayer) Init( layerSize int ) {
+func (self *BaseLayer) Init( layerSize int, activation []utils.ActivationFunction ) { //activation utils.ActivationFunction
 	// Set the size
 	self.OutputDim = layerSize
 	// Set the layer activation
-
+	self.Activation = activation[0]
+	fmt.Println("\tLayer Activation function: ", self.Activation.Name())
 	// Set the layer regularisation
 
 	// Set the layer dropout
@@ -66,7 +68,8 @@ func (self *BaseLayer) FeedForward( inputVector []float64 ) {
 		self.Zetas[o] = unitZeta
 		// Now we have the zeta, we calculate the activation using the sigmoid.
 		// We need to store the zeta for the calculation of gradients at the later stage.
-		self.Activations[o] = utils.Sigmoid(unitZeta)
+		self.Activations[o] = self.Activation.Fn(unitZeta)
+		// self.Activations[o] = utils.Sigmoid(unitZeta)
 	}
 }
 
@@ -114,14 +117,16 @@ func (self *BaseLayer) CalculateDeltaRegular( w [][]float64, d []float64 ) {
 			tmpDelta += w[o][n] * d[n]
 		}
 		// Hademard-product. Pointwise multiplication with the differential.
-		self.Deltas[o] = tmpDelta * utils.SigmoidDifferential(self.Zetas[o])
+		self.Deltas[o] = tmpDelta * self.Activation.FnPrime(self.Zetas[o])
+		// self.Deltas[o] = tmpDelta * utils.SigmoidDifferential(self.Zetas[o])
 	}
 }
 
 func (self *BaseLayer) CalculateDeltaOutputSquaredError( outputTruthVector []float64 ) {
 	for o := 0; o < self.OutputDim; o++ {
 		// Hademard-product. Pointwise multiplication with the differential.
-		self.Deltas[o] = (self.Activations[o] - outputTruthVector[o]) * utils.SigmoidDifferential(self.Zetas[o])
+		self.Deltas[o] = (self.Activations[o] - outputTruthVector[o]) * self.Activation.FnPrime(self.Zetas[o])
+		// self.Deltas[o] = (self.Activations[o] - outputTruthVector[o]) * utils.SigmoidDifferential(self.Zetas[o])
 	}
 }
 

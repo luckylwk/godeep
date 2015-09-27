@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/luckylwk/godeep/go-deep"
 	"github.com/luckylwk/godeep/go-deep/layers"
-    // "github.com/luckylwk/go-neural/godeep/utils"
+    "github.com/luckylwk/godeep/go-deep/utils"
 )
 
 //
@@ -32,24 +32,27 @@ func main() {
     labelData = nil
 
 
-	model := godeep.Sequential{}
+
+
+    fmt.Println("\n\n *** BUILDING MODEL")
+    model := godeep.Sequential{}
 	model.Init(len(trainingInputs[0]),"CROSSENTROPY")
     // Create new layer and add to model.
 	layer1 := layers.BaseLayer{}
-	layer1.Init(40)
+	layer1.Init(40,[]utils.ActivationFunction{&utils.Sigmoid{}})
 	model.Add( &layer1 )
     // Create new layer and add to model.
 	layer2 := layers.BaseLayer{}
-	layer2.Init(20)
+	layer2.Init(20,[]utils.ActivationFunction{&utils.Tanh{}})
 	model.Add( &layer2 )
     // Create new layer and add to model.
 	layer3 := layers.BaseLayer{}
-	layer3.Init(10)
+	layer3.Init(10,[]utils.ActivationFunction{&utils.Sigmoid{}})
 	model.Add( &layer3 )
 
 	model.Compile()
 
-	model.Train(trainingInputs,trainingTargets,10,20)
+	model.Train(trainingInputs,trainingTargets,2,20)
 
 
 
