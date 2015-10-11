@@ -37,19 +37,16 @@ func main() {
     fmt.Println("\n\n *** BUILDING MODEL")
     model := godeep.Sequential{}
 	model.Init(len(trainingInputs[0]),"CROSSENTROPY")
-    // Create new layer and add to model.
-	layer1 := layers.BaseLayer{}
+    // Create new layers and add to model.
+	layer1 := layers.DenseLayer{}
 	layer1.Init(40,[]utils.ActivationFunction{&utils.Sigmoid{}})
-	model.Add( &layer1 )
-    // Create new layer and add to model.
-	layer2 := layers.BaseLayer{}
+	layer2 := layers.DenseLayer{}
 	layer2.Init(20,[]utils.ActivationFunction{&utils.Tanh{}})
-	model.Add( &layer2 )
-    // Create new layer and add to model.
-	layer3 := layers.BaseLayer{}
+	layer3 := layers.DenseLayer{}
 	layer3.Init(10,[]utils.ActivationFunction{&utils.Sigmoid{}})
-	model.Add( &layer3 )
-
+    // Add the created layers.
+    model.Add( []layers.BaseLayer{&layer1,&layer2,&layer3} )
+    // Compile the model.
 	model.Compile()
 
 	model.Train(trainingInputs,trainingTargets,2,20)

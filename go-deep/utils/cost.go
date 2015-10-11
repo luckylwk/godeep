@@ -8,7 +8,18 @@ import (
 
 //
 
+type CostFunction interface {
+    Name() string;
+    Fn( a []float64, y []float64 ) float64;
+    FnPrime( a []float64, y []float64 ) float64;
+}
+
+
 type CostSquaredError struct {}
+
+func (self *CostSquaredError) Name() string {
+    return "Squared Error"
+}
 
 func (self *CostSquaredError) Fn( a []float64, y []float64 ) float64 {
 	cost := 0.0
@@ -22,6 +33,10 @@ func (self *CostSquaredError) Fn( a []float64, y []float64 ) float64 {
 
 
 type CostCrossEntropy struct {}
+
+func (self *CostCrossEntropy) Name() string {
+    return "Cross-Entropy (Multinomial Logistic)"
+}
 
 func (self *CostCrossEntropy) Fn( a []float64, y []float64 ) float64 {
 	cost := 0.0

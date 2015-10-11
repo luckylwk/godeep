@@ -14,24 +14,29 @@ Model setup looks like
 model := godeep.Sequential{}
 model.Init(len(trainingInputs[0]),"CROSSENTROPY")
 
-// Create new layer and add to model.
-layer1 := layers.BaseLayer{}
-layer1.Init(40)
-model.Add( &layer1 )
+// Create new layers and add to model.
+layer1 := layers.DenseLayer{}
+layer1.Init(40,[]utils.ActivationFunction{&utils.Sigmoid{}})
+layer2 := layers.DenseLayer{}
+layer2.Init(20,[]utils.ActivationFunction{&utils.Tanh{}})
+layer3 := layers.DenseLayer{}
+layer3.Init(10,[]utils.ActivationFunction{&utils.Sigmoid{}})
 
-// Create new layer and add to model.
-layer2 := layers.BaseLayer{}
-layer2.Init(20)
-model.Add( &layer2 )
+// Add the created layers.
+model.Add( []layers.BaseLayer{&layer1,&layer2,&layer3} )
 
-// Create new layer and add to model.
-layer3 := layers.BaseLayer{}
-layer3.Init(10)
-model.Add( &layer3 )
-
+// Compile the model.
 model.Compile()
 
-model.Train(trainingInputs,trainingTargets,10,20)
+model.Train(trainingInputs,trainingTargets,2,20)
 ~~~
 
-Regularisation, Dropout and alternative activation functions (to sigmoidal) have not been implemented yet.
+To implement next:
+
+- Dropout Layers
+- Recurrent Layers
+
+
+
+// Notes:
+https://github.com/luciotato/golang-notes/blob/master/OOP.md
